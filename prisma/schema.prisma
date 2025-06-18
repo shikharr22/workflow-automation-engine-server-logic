@@ -43,6 +43,6 @@ model WorkflowLog {
   message     String
   createdAt   DateTime    @default(now())
 
-  workflow    Workflow   @relation(fields:[workflowId],references:[id])
+  workflow    Workflow   @relation(fields:[workflowId],references:[id],onDelete: Cascade)
 
 }

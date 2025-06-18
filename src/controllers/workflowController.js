@@ -59,3 +59,42 @@ export const getWorkflowLogs = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+export const getAllWorkflowLogs = async (req, res) => {
+  const { status, limit = 10, offset = 0 } = req?.query;
+
+  try {
+    const workflowLogs = await prisma.workflowLog.findMany({
+      orderBy: { createdAt: "desc" },
+      skip: parseInt(offset),
+      take: parseInt(limit),
+    });
+
+    const totalCount = await prisma.workflowLog.count({
+      where: {
+        ...(status ? { status } : {}),
+      },
+    });
+
+    res.status(200).send({ workflowLogs, totalCount });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
+
+export const deleteWorkflow = async (req, res) => {
+  const { workflowId } = req?.params;
+  const userId = req?.userId;
+
+  try {
+    await prisma.workflow.delete({ where: { id: workflowId, userId } });
+
+    res
+      .status(200)
+      .send({ message: `Workflow with id ${workflowId} deleted successfully` });
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+};
