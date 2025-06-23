@@ -117,8 +117,12 @@ const workflowLogAction = async ({
   message,
 }) => {
   try {
+    const workflow = await prisma.workflow.findUnique({
+      where: { id: workflowId },
+    });
     await prisma.workflowLog.create({
       data: {
+        workflowName: workflow?.name,
         workflowId,
         actionType,
         status,

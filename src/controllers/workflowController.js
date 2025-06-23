@@ -23,9 +23,16 @@ export const createWorkflow = async (req, res) => {
 
 export const getWorkflows = async (req, res) => {
   const userId = req?.userId;
-
+  const { searchQuery, limit = 5, offset = 0 } = req?.query;
   try {
-    const workflows = await prisma.workflow.findMany({ where: { userId } });
+    const workflows = await prisma.workflow.findMany({
+      where: {
+        userId,
+        ...(searchQuery
+          ? { name: { contains: searchQuery, mode: "insensitive" } }
+          : {}),
+      },
+    });
 
     res.status(200).send({ workflows });
   } catch (error) {
@@ -36,11 +43,14 @@ export const getWorkflows = async (req, res) => {
 
 export const getWorkflowLogs = async (req, res) => {
   const { workflowId } = req?.params;
-  const { status, limit = 10, offset = 0 } = req?.query;
+  const { status, limit = 5, offset = 0, searchQuery = "" } = req?.query;
 
   try {
     const workflowLogs = await prisma.workflowLog.findMany({
-      where: { workflowId, ...(status ? { status } : {}) },
+      where: {
+        workflowId,
+        ...(status ? { status } : {}),
+      },
       orderBy: { createdAt: "desc" },
       skip: parseInt(offset),
       take: parseInt(limit),

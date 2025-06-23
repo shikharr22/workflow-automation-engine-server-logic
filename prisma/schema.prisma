@@ -36,13 +36,14 @@ model Workflow {
 
 
 model WorkflowLog {
-  id          String      @id @default(uuid())
-  workflowId  String
-  actionType  String
-  status      String
-  message     String
-  createdAt   DateTime    @default(now())
+  id            String      @id @default(uuid())
+  workflowName  String?      
+  workflowId    String
+  actionType    String
+  status        String
+  message       String
+  createdAt     DateTime    @default(now())
 
-  workflow    Workflow   @relation(fields:[workflowId],references:[id],onDelete: Cascade)
+  workflow      Workflow   @relation(fields:[workflowId],references:[id],onDelete: Cascade)
 
 }
